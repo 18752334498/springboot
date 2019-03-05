@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yucong.mapper.ManMapper">
+
+	<!-- resultMap 是和查询结果映射，不是和数据库的映射 -->
+	
+	<resultMap type="com.yucong.entity.Man" id="baseMap">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="age" property="age"/>
+	</resultMap>
+	
+	<select id="selectById" parameterType="int" resultMap="baseMap">
+		select * from man
+		<where>
+			<if test="id != 0">
+				id = #{id}
+			</if>
+		</where>
+	</select>
+	
+	
+	<!-- =============================================一对一，关联查询,直接获取所有结果=============================================== -->
+	<resultMap type="com.yucong.entity.Man" id="wifeMap" extends="baseMap">
+					<!-- 一对一返回的是类，用javaType，一对多，返回的是集合，用ofType -->
+		<association property="wife" javaType="Wife" columnPrefix="wife_">
+			<id column="id" property="id"/>				<!-- resultMap映射是结果集和类属性映射，这里加前缀是让column和查询结果里的别名相同 -->
+			<result column="man_id" property="manId"/>
+			<result column="name" property="name"/>
+			<result column="age" property="age"/>
+		</association>
+	</resultMap>
+	
+	<select id="selectManAndWifeById" parameterType="int" resultMap="wifeMap">
+		select
+			m.id, m.name, m.age, 
+			w.id wife_id,
+			w.age wife_age,			<!-- 这里去别名是为了和man区分 -->
+			w.name wife_name,
+			w.man_id wife_man_id
+		from man m
+		left join wife w
+		on m.id = w.man_id
+		<where>
+			<if test="id != 0">
+				m.id = #{id}
+			</if>
+		</where>
+	</select>
+
+
+	<!-- ============================================一对一,关联嵌套查询,按需加载================================================ -->
+	<resultMap type="com.yucong.entity.Man" id="wifeMap1" extends="baseMap">
+	
+		 <!-- 
+		 	column="{prop1=col1,prop2=col2}" 
+		 	在wife.xml里是map接收，所以id和age是值，manId和age是键，要一一对应，manId和age不能写错
+		 	如果只有一个参数可以随便传值
+		 -->
+		<association property="wife" fetchType="lazy" column="{manId=id,age=age}" select="com.yucong.mapper.WifeMapper.selectWifeByManId">
+		</association>
+	</resultMap>
+	
+	<select id="selectManAndWifeById1" parameterType="int" resultMap="wifeMap1">
+		select id, name, age from man		<!-- 这里的列明或者别名要和baseMap相同 -->
+		<where>
+			<if test="id != 0">
+				id = #{id, jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+
+	<!-- ============================================一对多,关联查询,直接获取所有结果================================================ -->
+	<resultMap type="com.yucong.entity.Man" id="addressMap" extends="baseMap">
+					<!-- 一对多，返回的是集合，用ofType，而一对一返回的是类，用javaType -->
+		<collection property="addresses" ofType="com.yucong.entity.Address" columnPrefix="address_">
+			<id column="id" property="id"/>
+			<result column="man_id" property="manId"/>
+			<result column="province" property="province"/>
+			<result column="city" property="city"/>
+		</collection>
+	</resultMap>
+	
+	<select id="selectAddressOfMan" parameterType="int" resultMap="addressMap">
+		select
+			m.id, m.name, m.age,
+			a.id address_id,
+			a.man_id address_man_id,		<!-- 这里去别名是为了和man区分 -->
+			a.province address_province,
+			a.city address_city
+		from man m
+		left join address a
+		on m.id = a.man_id
+		<where>
+			<if test="id != 0">
+				id = #{id, jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<!-- ============================================一对多,关联嵌套查询,按需加载================================================ -->
+	<resultMap type="com.yucong.entity.Man" id="addressMap1" extends="baseMap">
+		<collection property="addresses" fetchType="lazy" column="id" select="com.yucong.mapper.AddressMapper.selectAddressByManId">
+					<!-- 这里是将 selectAddressOfMan1 查询结果里的 id 放入 column 里面,一个参数不用关注名称相不相同-->
+		</collection>
+	</resultMap>
+	<select id="selectAddressOfMan1" parameterType="int" resultMap="addressMap1">
+		select id, name, age from man
+		<where>
+			<if test="id != 0">
+				id = #{id, jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+
+
+</mapper>

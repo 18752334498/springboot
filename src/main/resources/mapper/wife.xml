@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yucong.mapper.WifeMapper">
+
+	<!-- resultMap 是java属性和查询结果映射，不是和数据库的映射 -->
+	<resultMap type="com.yucong.entity.Wife" id="baseMap">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="age" property="age"/>
+		<result column="man_id" property="manId"/>
+	</resultMap>
+	
+	<select id="selectWifeByManId" parameterType="map" resultMap="baseMap">
+		select * from wife
+		where man_id = #{manId, jdbcType=INTEGER} and age = #{age, jdbcType=INTEGER}
+	</select>
+
+</mapper>

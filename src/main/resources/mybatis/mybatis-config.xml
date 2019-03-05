@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	
+	<settings>
+		
+		<!-- 延迟加载的全局开关,默认值是false关闭，如果需要延迟加载，则使用 fetchType="lazy" -->
+		<setting name="lazyLoadingEnabled" value="false" />
+	
+		<!-- 对任意延迟属性的调用，会使带有延迟加载属性的对象完整加载，默认true打开，这里配置为false -->
+		<setting name="aggressiveLazyLoading" value="false" />
+	</settings>
+
+</configuration>  

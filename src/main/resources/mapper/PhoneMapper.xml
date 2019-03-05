@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yucong.mapper.PhoneMapper">
+
+	<insert id="insertBatch" parameterType="java.util.List">
+		insert into phone (id, name, amount, version)
+		values
+		<foreach collection="list" item="phone" separator=",">
+		(	#{phone.id,jdbcType=BIGINT},
+
+			#{phone.name,jdbcType=VARCHAR},
+
+			#{phone.amount,jdbcType=INTEGER},
+
+			#{phone.version,jdbcType=INTEGER}
+		)
+		</foreach>
+	</insert>
+	
+	<update id="updateByVersion" parameterType="java.util.HashMap">
+		update phone set amount=(amount - #{count}), version=(version + 1)
+					 where id=#{id} and version=#{version}
+	</update>
+	
+	<update id="buyDirect" parameterType="java.util.HashMap">
+		update phone set amount=(amount - #{count})	where id=#{id} and amount >= #{count}
+	</update>
+	
+	<select id="selectWithPage" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select * from phone 
+				order by ${column}
+				limit #{limit} offset #{offset}
+	</select>
+	
+	<select id="selectByPagination" parameterType="map" resultType="java.util.HashMap">
+		select * from phone
+		<if test="pageIndex != null and pageRows != null">
+			limit #{pageIndex, jdbcType=INTEGER}, #{pageRows, jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<select id="selectAll" resultType="int">
+		select count(1) from phone
+	</select>
+	
+	<select id="selectByPhoneId" parameterType="long" resultType="com.yucong.model.Phone">
+		select * from phone where id = #{id}
+	</select>
+	
+	<update id="updateByName" parameterType="Phone">
+		update phone set amount=#{amount} where name=#{name}
+	</update>
+	
+
+</mapper>
