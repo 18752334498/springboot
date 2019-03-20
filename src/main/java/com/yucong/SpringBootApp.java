@@ -7,6 +7,8 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.yucong.event.NewApplicationListener;
+
 /**
  * Hello world!
  *
@@ -18,7 +20,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableAsync
 public class SpringBootApp {
 	public static void main(String[] args) {
-		SpringApplication.run(SpringBootApp.class, args);
+		SpringApplication app = new SpringApplication(SpringBootApp.class);
+		app.addListeners(new NewApplicationListener());
+		app.run(args);
 
+//		new SpringApplicationBuilder(SpringBootApp.class).listeners(new NewApplicationListener()).run(args);
 	}
 }
