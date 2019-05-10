@@ -21,7 +21,8 @@ import com.alibaba.druid.support.http.WebStatFilter;
 @ConditionalOnProperty(name = "spring.datasource.type", havingValue = "com.alibaba.druid.pool.DruidDataSource", matchIfMissing = true)
 //其中name用来从application.properties中读取某个属性值，如果该值为空，则返回false;
 //如果值不为空，则将该值与havingValue指定的值进行比较，如果一样则返回true;否则返回false。
-//如果返回值为false，则该configuration不生效；为true则生效。
+//name缺少时是否可以加载，如果为true，没有该name也会正常加载，反之报错，默认值为false。
+//这里配置了matchIfMissing = true，如果删除spring.datasource.type=com.alibaba.druid.pool.DruidDataSource也会正常加载。
 
 public class DruidDBConfig {
 
