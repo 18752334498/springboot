@@ -19,12 +19,14 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.yucong.model.ExcelData;
+import com.yucong.model.User;
 
 /**
  * 功能：导入导出 
@@ -190,7 +192,7 @@ public class ExcelUtil {
 	 * 
 	 * @param excelPath
 	 */
-	public static List<Map<String, Object>> importExcel1(String excelPath) {
+	public static List<User> importExcel1(String excelPath) {
 		File excel = new File(excelPath);
 		String[] split = excel.getName().split("\\."); // .是特殊字符，需要转义！！！！！
 
@@ -219,8 +221,7 @@ public class ExcelUtil {
 		System.out.println(id + "\t" + name + "\t" + age);
 
 		// 获取sheet的行数
-		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-		Map<String, Object> map = null;
+		List<User> list = new ArrayList<>();
 		Row row = null;
 		for (int i = 0; i < sheet.getPhysicalNumberOfRows(); i++) {
 			// 过滤表头行
@@ -230,18 +231,31 @@ public class ExcelUtil {
 
 			// 获取当前行的数据
 			row = sheet.getRow(i);
-			map = new HashMap<String, Object>();
-			map.put(id, row.getCell(0).toString());
-			map.put(name, row.getCell(1).toString());
-			map.put(age, row.getCell(2).toString());
-			list.add(map);
+			Map<String, Object> map = new HashMap<String, Object>();
+			User user = new User();
+			
+			Cell cell1 = row.getCell(0);
+			cell1.setCellType(CellType.STRING);
+			map.put(id, cell1.toString());
+			user.setId(Integer.parseInt(cell1.toString()));
+
+			Cell cell2 = row.getCell(1);
+			cell2.setCellType(CellType.STRING);
+			map.put(name, cell2.toString());
+			user.setName(cell2.toString());
+			
+			Cell cell3 = row.getCell(2);
+			cell3.setCellType(CellType.STRING);
+			map.put(age, cell3.toString());
+			user.setAge(Integer.parseInt(cell3.toString()));
+			list.add(user);
 		}
 		return list;
 	}
 
 	// 测试导入
 	public static void main(String[] args) {
-		List<Map<String, Object>> list = importExcel1("D:\\student.xlsx");
+		List<User> list = importExcel1("D:\\student.xlsx");
 		list.forEach(System.out::println);
 	}
 
